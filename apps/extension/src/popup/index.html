@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Passport</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0d1a;
+      --surface: #1a1a2e;
+      --border: #2a2a4a;
+      --accent: #6366f1;
+      --accent2: #8b5cf6;
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+    body {
+      width: 380px; min-height: 520px; max-height: 600px;
+      background: var(--bg); color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px; overflow: hidden;
+    }
+    header {
+      background: linear-gradient(135deg, var(--surface) 0%, #1e1b4b 100%);
+      padding: 16px 20px; display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo { font-size: 22px; }
+    .title { font-weight: 700; font-size: 16px; letter-spacing: -0.3px; }
+    .subtitle { font-size: 11px; color: var(--text2); }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--success); margin-left: auto;
+      box-shadow: 0 0 8px var(--success);
+    }
+    nav { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); }
+    nav button {
+      flex: 1; padding: 10px 4px; background: none; border: none;
+      color: var(--text2); font-size: 12px; cursor: pointer;
+      border-bottom: 2px solid transparent; transition: all 0.2s; font-family: inherit;
+    }
+    nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
+    nav button:hover:not(.active) { color: var(--text); }
+    .tab-panel { display: none; overflow-y: auto; max-height: 480px; }
+    .tab-panel.active { display: block; }
+
+    /* ── Inbox ── */
+    #tab-inbox { padding: 16px; }
+    .section-title {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.8px; color: var(--text2); margin-bottom: 10px;
+    }
+    .memory-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .memory-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 12px; display: flex;
+      align-items: flex-start; gap: 8px; transition: border-color 0.2s;
+    }
+    .memory-card:hover { border-color: var(--accent); }
+    .memory-badge {
+      font-size: 10px; padding: 2px 6px; border-radius: 4px;
+      background: rgba(99,102,241,0.15); color: var(--accent);
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+      white-space: nowrap; flex-shrink: 0; margin-top: 1px;
+    }
+    .memory-content { flex: 1; font-size: 13px; line-height: 1.4; }
+    .memory-source { font-size: 10px; color: var(--text2); margin-top: 2px; }
+    .memory-delete {
+      background: none; border: none; color: var(--text2); cursor: pointer;
+      padding: 0; font-size: 14px; opacity: 0; transition: opacity 0.2s; flex-shrink: 0;
+    }
+    .memory-card:hover .memory-delete { opacity: 1; }
+    .memory-delete:hover { color: var(--danger); }
+    .empty-state { text-align: center; padding: 32px 16px; color: var(--text2); }
+    .empty-icon { font-size: 32px; margin-bottom: 8px; }
+    .add-form { display: flex; flex-direction: column; gap: 8px; }
+    .add-form textarea, .add-form select {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); padding: 10px 12px;
+      font-family: inherit; font-size: 13px; resize: none; outline: none;
+      transition: border-color 0.2s;
+    }
+    .add-form textarea:focus, .add-form select:focus { border-color: var(--accent); }
+    .add-form textarea { height: 70px; }
+    .btn {
+      padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
+      font-family: inherit; font-size: 13px; font-weight: 600; transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    /* ── Passport ── */
+    #tab-passport { padding: 16px; }
+    .identity-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .field-row { display: flex; flex-direction: column; gap: 4px; }
+    .field-label { font-size: 11px; color: var(--text2); font-weight: 500; }
+    .field-input {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); padding: 8px 12px;
+      font-family: inherit; font-size: 13px; outline: none; transition: border-color 0.2s;
+    }
+    .field-input:focus { border-color: var(--accent); }
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px; text-align: center;
+    }
+    .stat-num { font-size: 24px; font-weight: 700; color: var(--accent); }
+    .stat-label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ── Inject ── */
+    #tab-inject { padding: 16px; }
+    .platform-list { display: flex; flex-direction: column; gap: 8px; }
+    .platform-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 14px; display: flex;
+      align-items: center; gap: 12px; transition: all 0.2s;
+    }
+    .platform-card:hover { border-color: var(--accent); transform: translateX(2px); }
+    .platform-icon { font-size: 18px; width: 28px; text-align: center; }
+    .platform-name { font-weight: 600; font-size: 13px; }
+    .platform-desc { font-size: 11px; color: var(--text2); }
+    .inject-btn {
+      margin-left: auto; background: rgba(99,102,241,0.15);
+      border: 1px solid var(--accent); color: var(--accent);
+      border-radius: 6px; padding: 5px 10px; font-size: 11px;
+      font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .inject-btn:hover { background: var(--accent); color: white; }
+    .preview-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px; margin-top: 12px;
+      font-size: 11px; color: var(--text2); line-height: 1.5;
+      max-height: 100px; overflow-y: auto; white-space: pre-wrap;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .success-flash { animation: flashGreen 0.6s ease; }
+    @keyframes flashGreen {
+      0%, 100% { border-color: var(--border); }
+      50% { border-color: var(--success); box-shadow: 0 0 12px rgba(16,185,129,0.3); }
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="logo">🛂</span>
+    <div>
+      <div class="title">Agent Passport</div>
+      <div class="subtitle">Portable AI Context</div>
+    </div>
+    <div class="status-dot"></div>
+  </header>
+
+  <nav>
+    <button class="active" data-tab="inbox">📥 Memory Inbox</button>
+    <button data-tab="passport">🪪 Passport</button>
+    <button data-tab="inject">🚀 Inject</button>
+  </nav>
+
+  <!-- INBOX TAB -->
+  <div id="tab-inbox" class="tab-panel active">
+    <p class="section-title" style="margin-top:16px;padding:0 16px">Recent Memories</p>
+    <div class="memory-list" id="memoryList" style="padding:0 16px">
+      <div class="empty-state">
+        <div class="empty-icon">🧠</div>
+        <div>No memories yet.</div>
+        <div style="font-size:12px;margin-top:4px;">Add your first memory below.</div>
+      </div>
+    </div>
+    <div style="padding:0 16px 16px">
+      <p class="section-title" style="margin-bottom:10px">Add Memory</p>
+      <div class="add-form">
+        <select id="memCategory">
+          <option value="identity">Identity</option>
+          <option value="preference">Preference</option>
+          <option value="skill">Skill</option>
+          <option value="project">Project</option>
+          <option value="goal">Goal</option>
+          <option value="fact">Fact</option>
+          <option value="context">Context</option>
+          <option value="relationship">Relationship</option>
+        </select>
+        <textarea id="memContent" placeholder="e.g. I'm a senior TypeScript engineer building an AI startup…"></textarea>
+        <button class="btn btn-primary btn-sm" id="addMemBtn">＋ Add Memory</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASSPORT TAB -->
+  <div id="tab-passport" class="tab-panel">
+    <div style="padding:16px">
+      <div class="stats-row" id="statsRow">
+        <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Memories</div></div>
+        <div class="stat-card"><div class="stat-num" id="statCats">0</div><div class="stat-label">Categories</div></div>
+        <div class="stat-card"><div class="stat-num" id="statPerms">0</div><div class="stat-label">Grants</div></div>
+      </div>
+      <p class="section-title">Identity</p>
+      <div class="identity-form">
+        <div class="field-row">
+          <label class="field-label" for="idName">Name</label>
+          <input class="field-input" id="idName" placeholder="Your name" />
+        </div>
+        <div class="field-row">
+          <label class="field-label" for="idRole">Role</label>
+          <input class="field-input" id="idRole" placeholder="e.g. Senior Engineer" />
+        </div>
+        <div class="field-row">
+          <label class="field-label" for="idTz">Timezone</label>
+          <input class="field-input" id="idTz" placeholder="e.g. America/New_York" />
+        </div>
+        <div class="field-row">
+          <label class="field-label" for="idLang">Language</label>
+          <input class="field-input" id="idLang" placeholder="e.g. English" />
+        </div>
+        <button class="btn btn-primary btn-sm" id="saveIdentityBtn">Save Identity</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INJECT TAB -->
+  <div id="tab-inject" class="tab-panel">
+    <div style="padding:16px">
+      <p class="section-title" style="margin-bottom:12px">Inject your context into AI platforms</p>
+      <div class="platform-list">
+        <div class="platform-card" data-platform="chatgpt">
+          <span class="platform-icon">🤖</span>
+          <div><div class="platform-name">ChatGPT</div><div class="platform-desc">chat.openai.com</div></div>
+          <button class="inject-btn">Inject</button>
+        </div>
+        <div class="platform-card" data-platform="claude">
+          <span class="platform-icon">🧠</span>
+          <div><div class="platform-name">Claude</div><div class="platform-desc">claude.ai</div></div>
+          <button class="inject-btn">Inject</button>
+        </div>
+        <div class="platform-card" data-platform="perplexity">
+          <span class="platform-icon">🔍</span>
+          <div><div class="platform-name">Perplexity</div><div class="platform-desc">perplexity.ai</div></div>
+          <button class="inject-btn">Inject</button>
+        </div>
+        <div class="platform-card" data-platform="gemini">
+          <span class="platform-icon">✨</span>
+          <div><div class="platform-name">Gemini</div><div class="platform-desc">gemini.google.com</div></div>
+          <button class="inject-btn">Inject</button>
+        </div>
+        <div class="platform-card" data-platform="grok">
+          <span class="platform-icon">⚡</span>
+          <div><div class="platform-name">Grok</div><div class="platform-desc">grok.x.ai</div></div>
+          <button class="inject-btn">Inject</button>
+        </div>
+      </div>
+      <div class="preview-box" id="previewBox" style="display:none"></div>
+    </div>
+  </div>
+
+  <script type="module" src="./popup.ts"></script>
+</body>
+</html>

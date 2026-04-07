@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto';
 import type { MemoryItem, Passport } from '@agent-passport/schema';
 import { MemoryItemSchema, PassportSchema } from '@agent-passport/schema';
 
@@ -9,7 +8,7 @@ export class MemoryStore {
     const now = new Date().toISOString();
     this.passport = {
       version: '1.0',
-      id: initial?.id ?? randomUUID(),
+      id: initial?.id ?? crypto.randomUUID(),
       createdAt: initial?.createdAt ?? now,
       updatedAt: now,
       identity: initial?.identity ?? {},
@@ -41,7 +40,7 @@ export class MemoryStore {
     const now = new Date().toISOString();
     const full: MemoryItem = MemoryItemSchema.parse({
       ...item,
-      id: randomUUID(),
+      id: crypto.randomUUID(),
       createdAt: now,
       updatedAt: now,
     });

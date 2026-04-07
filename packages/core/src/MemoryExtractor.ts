@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto';
 import type { MemoryItem } from '@agent-passport/schema';
 
 type Platform = MemoryItem['source'];
@@ -33,7 +32,7 @@ export class MemoryExtractor {
         const content = match[0]?.trim();
         if (!content || content.length < 5) continue;
         results.push({
-          id: randomUUID(),
+          id: crypto.randomUUID(),
           content,
           category: rule.category,
           tags: [],
