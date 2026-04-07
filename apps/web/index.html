@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Passport — Portable AI Memory</title>
+  <meta name="description" content="Every AI should already know you. Agent Passport gives you portable memory across every AI platform." />
+  <meta property="og:title" content="Agent Passport — Portable AI Memory" />
+  <meta property="og:description" content="Every AI should already know you." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#6C63FF" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #0f0f18;
+      --surface2: #14141f;
+      --accent: #6C63FF;
+      --accent2: #a78bfa;
+      --accent-dim: rgba(108,99,255,0.12);
+      --accent-glow: rgba(108,99,255,0.35);
+      --text: #f0f0fa;
+      --text-dim: #7070a0;
+      --text-mid: #a0a0c8;
+      --border: rgba(255,255,255,0.06);
+      --border-accent: rgba(108,99,255,0.2);
+      --radius: 16px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── NOISE OVERLAY ──────────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ─── HERO ───────────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 100px 24px 80px;
+      overflow: hidden;
+    }
+
+    #hero-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(108,99,255,0.18) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border-accent);
+      border-radius: 50px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent2);
+      margin-bottom: 32px;
+      letter-spacing: 0.3px;
+    }
+    .eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent2);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero-headline {
+      font-size: clamp(48px, 8vw, 92px);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -3px;
+      margin-bottom: 28px;
+      background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 40%, #6C63FF 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(18px, 2.5vw, 24px);
+      color: var(--text-mid);
+      max-width: 600px;
+      margin: 0 auto 48px;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 32px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 40px var(--accent-glow);
+      background: #7c75ff;
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--text-mid);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      border-color: var(--border-accent);
+      color: var(--text);
+      background: var(--accent-dim);
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      z-index: 2;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--text-dim), transparent);
+    }
+
+    /* ─── SECTIONS ───────────────────────────────────────────────────── */
+    section {
+      position: relative;
+      z-index: 1;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ─── PROBLEM ────────────────────────────────────────────────────── */
+    .problem {
+      padding: 120px 24px;
+      text-align: center;
+    }
+    .problem-inner { max-width: 800px; margin: 0 auto; }
+    .section-label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .problem-headline {
+      font-size: clamp(32px, 5vw, 54px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
+    .problem-headline em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .problem-body {
+      font-size: 18px;
+      color: var(--text-mid);
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .pain-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .pain-pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 8px 18px;
+      font-size: 13.5px;
+      color: var(--text-mid);
+      transition: all 0.2s;
+    }
+    .pain-pill:hover { border-color: var(--border-accent); color: var(--text); background: var(--accent-dim); }
+
+    /* ─── HOW IT WORKS ───────────────────────────────────────────────── */
+    .how {
+      padding: 100px 24px;
+      background: linear-gradient(180deg, transparent 0%, rgba(108,99,255,0.03) 50%, transparent 100%);
+    }
+    .how-header { text-align: center; margin-bottom: 64px; }
+    .section-title {
+      font-size: clamp(30px, 4vw, 46px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .section-sub {
+      font-size: 17px;
+      color: var(--text-mid);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      position: relative;
+    }
+
+    .step-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      position: relative;
+      transition: all 0.25s;
+      overflow: hidden;
+    }
+    .step-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--accent-dim), transparent);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .step-card:hover { border-color: var(--border-accent); transform: translateY(-4px); }
+    .step-card:hover::before { opacity: 1; }
+
+    .step-number {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .step-number::before {
+      content: attr(data-n);
+      width: 24px;
+      height: 24px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border-accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    .step-icon { font-size: 36px; margin-bottom: 16px; }
+    .step-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .step-body {
+      font-size: 14.5px;
+      color: var(--text-mid);
+      line-height: 1.65;
+    }
+
+    /* ─── DEMO / CODE ────────────────────────────────────────────────── */
+    .demo {
+      padding: 100px 24px;
+    }
+    .demo-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    @media (max-width: 768px) {
+      .demo-inner { grid-template-columns: 1fr; }
+    }
+    .demo-text .section-label { display: block; margin-bottom: 12px; }
+    .demo-text .section-title { margin-bottom: 16px; }
+    .demo-text .section-sub { margin-bottom: 24px; }
+
+    .demo-features { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .demo-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14.5px;
+      color: var(--text-mid);
+    }
+    .demo-features li::before {
+      content: '✓';
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 13px;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .demo-visual {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px var(--border);
+    }
+    .demo-chrome {
+      background: var(--surface2);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .chrome-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+    .chrome-dot:nth-child(1) { background: #ff5f57; }
+    .chrome-dot:nth-child(2) { background: #febc2e; }
+    .chrome-dot:nth-child(3) { background: #28c840; }
+    .chrome-url {
+      flex: 1;
+      background: var(--bg);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-left: 8px;
+    }
+    .demo-code {
+      padding: 20px;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: var(--text-mid);
+    }
+    .code-comment { color: #4a4a7a; }
+    .code-key { color: #a78bfa; }
+    .code-string { color: #86efac; }
+    .code-accent { color: var(--accent); }
+
+    /* ─── TRUST ──────────────────────────────────────────────────────── */
+    .trust {
+      padding: 100px 24px;
+      text-align: center;
+      background: linear-gradient(180deg, transparent, rgba(108,99,255,0.04) 50%, transparent);
+    }
+    .trust-headline {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--text), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .trust-sub {
+      font-size: 17px;
+      color: var(--text-mid);
+      margin-bottom: 48px;
+    }
+
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .trust-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      text-align: left;
+      transition: all 0.2s;
+    }
+    .trust-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+    .trust-icon { font-size: 28px; margin-bottom: 12px; }
+    .trust-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .trust-body { font-size: 13.5px; color: var(--text-mid); line-height: 1.55; }
+
+    /* ─── PLATFORMS ──────────────────────────────────────────────────── */
+    .platforms {
+      padding: 80px 24px;
+      text-align: center;
+    }
+    .platforms-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      margin-bottom: 28px;
+      font-weight: 600;
+    }
+    .platform-logos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+    }
+    .platform-logo {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-mid);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .platform-logo:hover { border-color: var(--border-accent); color: var(--text); background: var(--accent-dim); }
+    .platform-logo span { font-size: 18px; }
+
+    /* ─── WAITLIST ───────────────────────────────────────────────────── */
+    .waitlist {
+      padding: 120px 24px;
+    }
+    .waitlist-inner {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .waitlist-glow {
+      position: absolute;
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(108,99,255,0.15) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .waitlist-title {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 900;
+      letter-spacing: -2px;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--text), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .waitlist-sub {
+      font-size: 17px;
+      color: var(--text-mid);
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    .waitlist-form {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+    }
+    .form-row { margin-bottom: 16px; }
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 15px;
+      padding: 13px 16px;
+      font-family: var(--font);
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    .form-input::placeholder { color: var(--text-dim); }
+    .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,0.15); }
+    .form-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: all 0.2s;
+      margin-top: 8px;
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+    .form-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 30px var(--accent-glow); }
+    .form-note {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 24px;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .footer-brand-icon { -webkit-text-fill-color: initial; font-size: 18px; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-link {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 13.5px;
+      transition: color 0.15s;
+    }
+    .footer-link:hover { color: var(--text); }
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* ─── FADE ANIMATIONS ────────────────────────────────────────────── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .hero-actions { flex-direction: column; align-items: center; }
+      .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+      .demo-inner { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── HERO ──────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-glow"></div>
+
+    <div class="hero-content">
+      <div class="eyebrow">
+        <span class="eyebrow-dot"></span>
+        Open source · Local-first · Zero cloud
+      </div>
+
+      <h1 class="hero-headline">Every AI should<br/>already know you.</h1>
+
+      <p class="hero-sub">
+        Agent Passport gives you a portable memory layer across every AI platform —
+        ChatGPT, Claude, Gemini, Perplexity, and more.
+        One identity. Everywhere you think.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#waitlist" class="btn-primary">
+          🚀 Get Early Access
+        </a>
+        <a href="https://github.com/agent-passport/agent-passport" class="btn-secondary" target="_blank" rel="noopener">
+          ⭐ View on GitHub
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      scroll
+    </div>
+  </section>
+
+  <!-- ─── PLATFORMS ─────────────────────────────────────────────────── -->
+  <section class="platforms">
+    <div class="container">
+      <div class="platforms-label">Works everywhere you think</div>
+      <div class="platform-logos">
+        <div class="platform-logo"><span>🤖</span> ChatGPT</div>
+        <div class="platform-logo"><span>🌸</span> Claude</div>
+        <div class="platform-logo"><span>✨</span> Gemini</div>
+        <div class="platform-logo"><span>🔍</span> Perplexity</div>
+        <div class="platform-logo"><span>🐙</span> GitHub Copilot</div>
+        <div class="platform-logo"><span>🪟</span> Copilot for Microsoft 365</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PROBLEM ───────────────────────────────────────────────────── -->
+  <section class="problem">
+    <div class="problem-inner fade-in">
+      <div class="section-label">The Problem</div>
+      <h2 class="problem-headline">
+        You re-explain yourself<br/>
+        to every AI. <em>Every session.<br/>Every platform.</em> That ends now.
+      </h2>
+      <p class="problem-body">
+        You are a senior engineer who prefers TypeScript, works on a SaaS startup,
+        hates verbose boilerplate, and has strong opinions on architecture.
+        Every AI you open has no idea. You start from zero. Again. And again.
+      </p>
+      <div class="pain-pills">
+        <div class="pain-pill">😤 "As I mentioned before…"</div>
+        <div class="pain-pill">🔁 Repeating your stack preferences</div>
+        <div class="pain-pill">📋 Copy-pasting your system prompt</div>
+        <div class="pain-pill">🤦 Explaining your project context again</div>
+        <div class="pain-pill">⏱️ Wasting the first 5 minutes of every session</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── HOW IT WORKS ──────────────────────────────────────────────── -->
+  <section class="how">
+    <div class="container">
+      <div class="how-header fade-in">
+        <div class="section-label">How it works</div>
+        <h2 class="section-title">Three steps to AI fluency.</h2>
+        <p class="section-sub">Agent Passport runs locally in your browser. No cloud. No accounts required.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step-card fade-in">
+          <div class="step-number" data-n="1">Step One</div>
+          <div class="step-icon">🧲</div>
+          <h3 class="step-title">Capture</h3>
+          <p class="step-body">
+            As you chat with any AI, Agent Passport silently watches and extracts
+            facts about you — your name, role, preferences, projects, decisions, and constraints.
+            All heuristically, all locally.
+          </p>
+        </div>
+
+        <div class="step-card fade-in">
+          <div class="step-number" data-n="2">Step Two</div>
+          <div class="step-icon">🔍</div>
+          <h3 class="step-title">Review</h3>
+          <p class="step-body">
+            Nothing gets saved without your approval. Review extracted memories in your
+            Inbox. Approve, edit, or reject each one. You are always in control of
+            your personal context.
+          </p>
+        </div>
+
+        <div class="step-card fade-in">
+          <div class="step-number" data-n="3">Step Three</div>
+          <div class="step-icon">⚡</div>
+          <h3 class="step-title">Inject</h3>
+          <p class="step-body">
+            Open any AI platform and click Inject — your entire personal context lands
+            in the input field, perfectly formatted. The AI knows you from sentence one.
+            Enable auto-inject to never think about it again.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── DEMO PREVIEW ─────────────────────────────────────────────── -->
+  <section class="demo">
+    <div class="container">
+      <div class="demo-inner">
+        <div class="demo-text fade-in">
+          <span class="section-label">Your AI Passport</span>
+          <h2 class="section-title">Structured context,<br/>beautifully injected.</h2>
+          <p class="section-sub">
+            Your memories are organized by category and injected as a clean markdown prompt
+            the AI can instantly understand.
+          </p>
+          <ul class="demo-features">
+            <li>Profile facts — who you are and what you do</li>
+            <li>Preferences — tech stack, style, and working habits</li>
+            <li>Active projects — what you're building right now</li>
+            <li>Decisions — choices already made, never second-guess</li>
+            <li>Constraints — rules the AI must always respect</li>
+          </ul>
+        </div>
+
+        <div class="demo-visual fade-in">
+          <div class="demo-chrome">
+            <div class="chrome-dot"></div>
+            <div class="chrome-dot"></div>
+            <div class="chrome-dot"></div>
+            <div class="chrome-url">claude.ai/chat</div>
+          </div>
+          <div class="demo-code">
+            <div class="code-comment"># Agent Passport Context</div>
+            <div>Platform: <span class="code-accent">Claude</span></div>
+            <br/>
+            <div class="code-comment">## Profile</div>
+            <div>- <span class="code-string">Senior TypeScript engineer at a SaaS startup</span></div>
+            <div>- <span class="code-string">Based in Berlin, Germany</span></div>
+            <br/>
+            <div class="code-comment">## Preferences</div>
+            <div>- <span class="code-string">Prefer functional patterns over OOP</span></div>
+            <div>- <span class="code-string">Always use strict TypeScript — no any</span></div>
+            <div>- <span class="code-string">Prefer pnpm over npm or yarn</span></div>
+            <br/>
+            <div class="code-comment">## Projects</div>
+            <div>- <span class="code-string">Building a B2B analytics platform (React + tRPC)</span></div>
+            <br/>
+            <div class="code-comment">## Constraints</div>
+            <div>- <span class="code-string">Never suggest class-based React components</span></div>
+            <br/>
+            <div class="code-key">---</div>
+            <div class="code-comment">*Injected by Agent Passport.*</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TRUST ─────────────────────────────────────────────────────── -->
+  <section class="trust">
+    <div class="container">
+      <div class="fade-in">
+        <div class="section-label">Why trust Agent Passport</div>
+        <h2 class="trust-headline">Local-first. Zero cloud.<br/>You own your data.</h2>
+        <p class="trust-sub">We built this because we needed it — not to harvest your data.</p>
+      </div>
+
+      <div class="trust-grid">
+        <div class="trust-card fade-in">
+          <div class="trust-icon">🔒</div>
+          <h3 class="trust-title">Fully Local</h3>
+          <p class="trust-body">All memories live in chrome.storage.local on your device. Nothing is transmitted to any server. Ever.</p>
+        </div>
+        <div class="trust-card fade-in">
+          <div class="trust-icon">👁️‍🗨️</div>
+          <h3 class="trust-title">You Review Everything</h3>
+          <p class="trust-body">Nothing is saved without your explicit approval. You see, edit, and control every single memory.</p>
+        </div>
+        <div class="trust-card fade-in">
+          <div class="trust-icon">📦</div>
+          <h3 class="trust-title">Portable Passport</h3>
+          <p class="trust-body">Export your entire memory as a JSON file. Import it on any device. Your context belongs to you.</p>
+        </div>
+        <div class="trust-card fade-in">
+          <div class="trust-icon">🔓</div>
+          <h3 class="trust-title">Open Source</h3>
+          <p class="trust-body">Every line of code is public. No black boxes. Audit it, fork it, contribute to it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── WAITLIST ──────────────────────────────────────────────────── -->
+  <section class="waitlist" id="waitlist">
+    <div class="waitlist-glow"></div>
+    <div class="waitlist-inner">
+      <div class="fade-in">
+        <div class="section-label">Early Access</div>
+        <h2 class="waitlist-title">Be first to carry<br/>your AI passport.</h2>
+        <p class="waitlist-sub">
+          We're launching the Chrome extension soon. Join the waitlist and get
+          notified the moment it's available — plus early access to the beta.
+        </p>
+      </div>
+
+      <form
+        class="waitlist-form fade-in"
+        name="waitlist"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+      >
+        <input type="hidden" name="form-name" value="waitlist" />
+        <p style="display:none">
+          <label>Don't fill this out: <input name="bot-field" /></label>
+        </p>
+
+        <div class="form-row">
+          <label class="form-label" for="wl-name">Your name</label>
+          <input
+            type="text"
+            id="wl-name"
+            name="name"
+            class="form-input"
+            placeholder="Ada Lovelace"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="wl-email">Email address</label>
+          <input
+            type="email"
+            id="wl-email"
+            name="email"
+            class="form-input"
+            placeholder="ada@example.com"
+            required
+          />
+        </div>
+
+        <button type="submit" class="form-submit">
+          ✨ Join the Waitlist
+        </button>
+
+        <p class="form-note">No spam. Unsubscribe anytime. We'll only email you about the launch.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ────────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-brand-icon">🛂</span>
+        Agent Passport
+      </div>
+
+      <div class="footer-links">
+        <a href="https://github.com/agent-passport/agent-passport" class="footer-link" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/agent-passport/agent-passport/blob/main/docs/VISION.md" class="footer-link" target="_blank" rel="noopener">Vision</a>
+        <a href="https://github.com/agent-passport/agent-passport/blob/main/docs/CONTRIBUTING.md" class="footer-link" target="_blank" rel="noopener">Contributing</a>
+        <a href="https://github.com/agent-passport/agent-passport/blob/main/LICENSE" class="footer-link" target="_blank" rel="noopener">License</a>
+      </div>
+
+      <div class="footer-copy">
+        Built with ❤️ for the open internet
+      </div>
+    </div>
+  </footer>
+
+  <!-- ─── CANVAS PARTICLE NETWORK ───────────────────────────────────── -->
+  <script>
+    (function () {
+      const canvas = document.getElementById('hero-canvas');
+      const ctx = canvas.getContext('2d');
+
+      let W, H, particles, animId;
+      const PARTICLE_COUNT = 80;
+      const MAX_DIST = 140;
+      const ACCENT = '108,99,255';
+
+      function resize() {
+        W = canvas.width = canvas.offsetWidth;
+        H = canvas.height = canvas.offsetHeight;
+      }
+
+      function createParticles() {
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          particles.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            vx: (Math.random() - 0.5) * 0.35,
+            vy: (Math.random() - 0.5) * 0.35,
+            r: Math.random() * 1.5 + 0.5,
+          });
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > W) p.vx *= -1;
+          if (p.y < 0 || p.y > H) p.vy *= -1;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${ACCENT},0.5)`;
+          ctx.fill();
+
+          for (let j = i + 1; j < particles.length; j++) {
+            const q = particles[j];
+            const dx = p.x - q.x;
+            const dy = p.y - q.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < MAX_DIST) {
+              const alpha = (1 - dist / MAX_DIST) * 0.3;
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.strokeStyle = `rgba(${ACCENT},${alpha})`;
+              ctx.lineWidth = 0.7;
+              ctx.stroke();
+            }
+          }
+        }
+        animId = requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', () => {
+        cancelAnimationFrame(animId);
+        resize();
+        createParticles();
+        draw();
+      });
+
+      resize();
+      createParticles();
+      draw();
+    })();
+  </script>
+
+  <!-- ─── INTERSECTION OBSERVER FADE-IN ────────────────────────────── -->
+  <script>
+    (function () {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('visible');
+              observer.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+      );
+
+      document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
+    })();
+  </script>
+
+</body>
+</html>
