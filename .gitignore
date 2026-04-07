@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.dist/
+build/
+*.tsbuildinfo
+.env
+.env.local
+.DS_Store
+*.zip
