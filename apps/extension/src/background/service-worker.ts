@@ -61,7 +61,8 @@ async function loadStore(): Promise<void> {
   if (result['memoryStore']) {
     try {
       store = MemoryStore.fromJSON(result['memoryStore'] as string);
-    } catch {
+    } catch (err) {
+      console.error('[Agent Passport] Failed to deserialize stored MemoryStore, starting fresh:', err);
       store = new MemoryStore();
     }
   }

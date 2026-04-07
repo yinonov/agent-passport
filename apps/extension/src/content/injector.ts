@@ -20,18 +20,15 @@ export function injectContext(context: string, platform: Platform): boolean {
   input.focus();
 
   if (input instanceof HTMLTextAreaElement || input instanceof HTMLInputElement) {
-    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-      window.HTMLTextAreaElement.prototype,
-      'value',
-    )?.set ?? Object.getOwnPropertyDescriptor(
-      window.HTMLInputElement.prototype,
-      'value',
-    )?.set;
+    const nativeInputValueSetter =
+      Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set ??
+      Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
 
-    if (nativeInputValueSetter) {
-      nativeInputValueSetter.call(input, context);
-    } else {
+    if (!nativeInputValueSetter) {
+      console.warn('[Agent Passport] Native value setter unavailable; falling back to direct assignment');
       input.value = context;
+    } else {
+      nativeInputValueSetter.call(input, context);
     }
 
     input.dispatchEvent(new InputEvent('input', { bubbles: true, data: context }));
