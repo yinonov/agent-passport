@@ -39,11 +39,16 @@ let allApproved: MemoryItem[] = [];
 async function detectPlatform(): Promise<Platform | 'unknown'> {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const url = tab?.url ?? '';
-  if (url.includes('chat.openai.com')) return 'chatgpt';
-  if (url.includes('claude.ai')) return 'claude';
-  if (url.includes('perplexity.ai')) return 'perplexity';
-  if (url.includes('gemini.google.com')) return 'gemini';
-  if (url.includes('copilot.microsoft.com') || url.includes('github.com')) return 'copilot';
+  try {
+    const { hostname } = new URL(url);
+    if (hostname === 'chat.openai.com') return 'chatgpt';
+    if (hostname === 'claude.ai') return 'claude';
+    if (hostname === 'www.perplexity.ai' || hostname === 'perplexity.ai') return 'perplexity';
+    if (hostname === 'gemini.google.com') return 'gemini';
+    if (hostname === 'copilot.microsoft.com' || hostname === 'github.com') return 'copilot';
+  } catch {
+    // invalid URL
+  }
   return 'unknown';
 }
 

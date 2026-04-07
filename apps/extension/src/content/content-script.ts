@@ -15,11 +15,11 @@ const PLATFORM_CONFIGS: PlatformConfig[] = [
 
 function detectPlatform(): Platform | null {
   const host = window.location.hostname;
-  if (host.includes('chat.openai.com')) return 'chatgpt';
-  if (host.includes('claude.ai')) return 'claude';
-  if (host.includes('perplexity.ai')) return 'perplexity';
-  if (host.includes('gemini.google.com')) return 'gemini';
-  if (host.includes('copilot.microsoft.com') || host.includes('github.com')) return 'copilot';
+  if (host === 'chat.openai.com') return 'chatgpt';
+  if (host === 'claude.ai') return 'claude';
+  if (host === 'www.perplexity.ai' || host === 'perplexity.ai') return 'perplexity';
+  if (host === 'gemini.google.com') return 'gemini';
+  if (host === 'copilot.microsoft.com' || host === 'github.com') return 'copilot';
   return null;
 }
 
