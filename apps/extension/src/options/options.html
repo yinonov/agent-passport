@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Passport — Options</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface2: #1a1a26;
+      --accent: #6C63FF;
+      --accent-dim: rgba(108,99,255,0.15);
+      --text: #e8e8f0;
+      --text-dim: #8888a8;
+      --border: rgba(255,255,255,0.06);
+      --reject: #ef4444;
+      --radius: 10px;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container { max-width: 640px; margin: 0 auto; }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+    .logo-icon { font-size: 28px; }
+    .logo-text h1 {
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .logo-text p { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    .section { margin-bottom: 28px; }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--accent-dim);
+    }
+    .card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-row:hover { background: rgba(255,255,255,0.02); }
+    .setting-label { font-size: 13.5px; color: var(--text); }
+    .setting-desc { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .toggle {
+      position: relative;
+      width: 42px;
+      height: 23px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 23px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 17px;
+      height: 17px;
+      left: 2px;
+      top: 2px;
+      background: var(--text-dim);
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+    .toggle input:checked + .toggle-slider { background: var(--accent); border-color: var(--accent); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(19px); background: white; }
+    .slider-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .slider-control { display: flex; align-items: center; gap: 12px; width: 100%; }
+    input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .slider-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      min-width: 50px;
+      text-align: right;
+    }
+    .danger-zone .card { border-color: rgba(239,68,68,0.2); }
+    .btn-danger {
+      background: rgba(239,68,68,0.1);
+      color: var(--reject);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 7px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-danger:hover { background: rgba(239,68,68,0.18); }
+    .saved-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--accent);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.2s;
+      pointer-events: none;
+    }
+    .saved-toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <span class="logo-icon">🛂</span>
+      <div class="logo-text">
+        <h1>Agent Passport</h1>
+        <p>Extension Settings</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Platform Integrations</div>
+      <div class="card">
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">🤖 ChatGPT</div>
+            <div class="setting-desc">chat.openai.com</div>
+          </div>
+          <label class="toggle"><input type="checkbox" data-platform="chatgpt" checked /><span class="toggle-slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">🌸 Claude</div>
+            <div class="setting-desc">claude.ai</div>
+          </div>
+          <label class="toggle"><input type="checkbox" data-platform="claude" checked /><span class="toggle-slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">🔍 Perplexity</div>
+            <div class="setting-desc">perplexity.ai</div>
+          </div>
+          <label class="toggle"><input type="checkbox" data-platform="perplexity" checked /><span class="toggle-slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">✨ Gemini</div>
+            <div class="setting-desc">gemini.google.com</div>
+          </div>
+          <label class="toggle"><input type="checkbox" data-platform="gemini" checked /><span class="toggle-slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">🐙 GitHub Copilot</div>
+            <div class="setting-desc">copilot.microsoft.com &amp; github.com</div>
+          </div>
+          <label class="toggle"><input type="checkbox" data-platform="copilot" checked /><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Memory Settings</div>
+      <div class="card">
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Auto-inject on page load</div>
+            <div class="setting-desc">Automatically inject your context when opening a supported platform</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="auto-inject" /><span class="toggle-slider"></span></label>
+        </div>
+        <div class="setting-row slider-row">
+          <div>
+            <div class="setting-label">Memory retention</div>
+            <div class="setting-desc">Automatically expire memories older than this</div>
+          </div>
+          <div class="slider-control">
+            <input type="range" id="retention-slider" min="7" max="365" step="7" value="90" />
+            <span class="slider-value" id="retention-value">90 days</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section danger-zone">
+      <div class="section-title">Danger Zone</div>
+      <div class="card">
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Clear all memories</div>
+            <div class="setting-desc">Permanently delete all stored memories. This cannot be undone.</div>
+          </div>
+          <button class="btn-danger" id="btn-clear">Clear All</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="saved-toast" id="saved-toast">✓ Settings saved</div>
+
+  <script type="module" src="../dist/options/options.js"></script>
+</body>
+</html>

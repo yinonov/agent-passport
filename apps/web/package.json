@@ -1,0 +1,10 @@
+{
+  "name": "@agent-passport/web",
+  "version": "0.1.0",
+  "description": "Agent Passport landing page",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Static site - no build needed'",
+    "dev": "npx serve . --listen 3000"
+  }
+}
