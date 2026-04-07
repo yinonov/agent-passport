@@ -33,7 +33,18 @@ export const PermissionGrantSchema = z.object({
   id: z.string().uuid(),
   platform: z.enum(['chatgpt', 'claude', 'perplexity', 'gemini', 'grok', '*']),
   scope: z.array(
-    z.enum(['read:identity', 'read:preferences', 'read:skills', 'read:projects', 'read:all', 'write:memory'])
+    z.enum([
+      'read:identity',
+      'read:preference',
+      'read:skill',
+      'read:project',
+      'read:relationship',
+      'read:goal',
+      'read:context',
+      'read:fact',
+      'read:all',
+      'write:memory',
+    ])
   ),
   grantedAt: z.string().datetime(),
   expiresAt: z.string().datetime().optional(),

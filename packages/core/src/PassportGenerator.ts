@@ -2,6 +2,10 @@ import type { MemoryItem, Passport, PassportPack, PermissionGrant } from '@agent
 import { PassportPackSchema } from '@agent-passport/schema';
 
 type Platform = PassportPack['platform'];
+type PermissionScope = PermissionGrant['scope'][number];
+
+/** Approximate characters per token for system-prompt token estimation. */
+const CHARS_PER_TOKEN = 4;
 
 const PLATFORM_PREAMBLES: Record<Platform, string> = {
   chatgpt: 'You are talking with a user who has shared their Agent Passport. Use this context to personalise every response.',
@@ -25,14 +29,12 @@ export class PassportGenerator {
     );
     if (applicable.length === 0) return [];
 
-    const allScopes = applicable.flatMap((g) => g.scope);
-    const hasAll = allScopes.includes('read:all');
+    const allScopes = new Set<PermissionScope>(applicable.flatMap((g) => g.scope));
+    if (allScopes.has('read:all')) return memories;
 
-    return memories.filter((m) => {
-      if (hasAll) return true;
-      const categoryScope = `read:${m.category}` as const;
-      return allScopes.includes(categoryScope as never);
-    });
+    return memories.filter((m) =>
+      allScopes.has(`read:${m.category}` as PermissionScope)
+    );
   }
 
   generate(platform: Platform, maxTokens = 1500): PassportPack {
@@ -67,7 +69,8 @@ export class PassportGenerator {
     }
 
     const systemPrompt = lines.join('\n').trim();
-    const approxTokens = Math.ceil(systemPrompt.length / 4);
+    // Rough token estimate: ~4 characters per token (GPT-style tokenisation)
+    const approxTokens = Math.ceil(systemPrompt.length / CHARS_PER_TOKEN);
 
     return PassportPackSchema.parse({
       version: '1.0',
