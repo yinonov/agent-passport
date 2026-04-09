@@ -1,0 +1,29 @@
+{
+  "name": "agent-passport",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Portable memory & permissions layer for the agent internet",
+  "scripts": {
+    "build": "pnpm -r build",
+    "build:schema": "pnpm --filter @agent-passport/schema build",
+    "build:core": "pnpm --filter @agent-passport/core build",
+    "build:extension": "pnpm --filter @agent-passport/extension build",
+    "build:cli": "pnpm --filter @agent-passport/cli build",
+    "build:sdk": "pnpm --filter @agent-passport/sdk build",
+    "test": "pnpm -r test",
+    "test:schema": "pnpm --filter @agent-passport/schema test",
+    "test:core": "pnpm --filter @agent-passport/core test",
+    "test:cli": "pnpm --filter @agent-passport/cli test",
+    "test:sdk": "pnpm --filter @agent-passport/sdk test",
+    "clean": "pnpm -r exec rm -rf dist",
+    "lint": "pnpm -r lint"
+  },
+  "keywords": ["ai", "memory", "agent", "passport", "chrome-extension", "context", "portable"],
+  "author": "Agent Passport Contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@9.1.0"
+}

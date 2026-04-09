@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Agent Passport Settings</title>
+  <style>
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    :root {
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #1c2128;
+      --accent: #6C63FF;
+      --accent-hover: #7f78ff;
+      --accent-glow: rgba(108,99,255,0.15);
+      --text: #e6edf3;
+      --text2: #8b949e;
+      --border: #30363d;
+      --green: #3fb950;
+      --red: #f85149;
+      --radius: 8px;
+      --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 560px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .header svg { width: 32px; height: 32px; flex-shrink: 0; }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header p { font-size: 13px; color: var(--text2); }
+
+    .section {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text2);
+      margin-bottom: 16px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(48,54,61,0.5);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-label { font-size: 14px; color: var(--text); }
+    .toggle-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+    .switch {
+      position: relative;
+      width: 42px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .slider::before {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 2px;
+      bottom: 2px;
+      background: var(--text2);
+      border-radius: 50%;
+      transition: transform var(--transition), background var(--transition);
+    }
+    .switch input:checked + .slider {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .switch input:checked + .slider::before {
+      transform: translateX(18px);
+      background: #fff;
+    }
+
+    .select-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+    }
+    .select-row select {
+      padding: 8px 32px 8px 12px;
+      background: var(--bg3);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b949e' viewBox='0 0 16 16'%3E%3Cpath d='M4.427 7.427l3.396 3.396a.25.25 0 00.354 0l3.396-3.396A.25.25 0 0011.396 7H4.604a.25.25 0 00-.177.427z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      transition: border-color var(--transition);
+    }
+    .select-row select:hover,
+    .select-row select:focus { border-color: var(--accent); outline: none; }
+
+    .danger-zone {
+      border-color: rgba(248,81,73,0.3);
+    }
+    .danger-zone .section-title { color: var(--red); }
+
+    .btn-danger {
+      padding: 10px 20px;
+      background: rgba(248,81,73,0.1);
+      color: var(--red);
+      border: 1px solid rgba(248,81,73,0.3);
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .btn-danger:hover {
+      background: rgba(248,81,73,0.2);
+      border-color: var(--red);
+    }
+
+    .save-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg3);
+      color: var(--green);
+      border: 1px solid rgba(63,185,80,0.3);
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    .save-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="4" width="28" height="24" rx="4" fill="#161b22" stroke="#6C63FF" stroke-width="1.5"/>
+        <rect x="5" y="7" width="22" height="4" rx="1" fill="#6C63FF" opacity="0.8"/>
+        <circle cx="11" cy="17" r="3.5" fill="#161b22" stroke="#58a6ff" stroke-width="1.2"/>
+        <circle cx="11" cy="16.5" r="1.5" fill="#58a6ff"/>
+        <rect x="17" y="14" width="8" height="1.5" rx="0.75" fill="#30363d"/>
+        <rect x="17" y="17" width="6" height="1.5" rx="0.75" fill="#30363d"/>
+        <rect x="17" y="20" width="7" height="1.5" rx="0.75" fill="#30363d"/>
+      </svg>
+      <div>
+        <h1>Agent Passport Settings</h1>
+        <p>Configure how Agent Passport captures and manages your AI context.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Capture</div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Auto-Capture</div>
+          <div class="toggle-desc">Automatically extract memory candidates from conversations</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="auto-capture" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Platforms</div>
+      <div class="toggle-row">
+        <div class="toggle-label">ChatGPT</div>
+        <label class="switch"><input type="checkbox" id="platform_chatgpt" checked /><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Claude</div>
+        <label class="switch"><input type="checkbox" id="platform_claude" checked /><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Perplexity</div>
+        <label class="switch"><input type="checkbox" id="platform_perplexity" checked /><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Gemini</div>
+        <label class="switch"><input type="checkbox" id="platform_gemini" checked /><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">GitHub Copilot</div>
+        <label class="switch"><input type="checkbox" id="platform_copilot" checked /><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Memory Retention</div>
+      <div class="select-row">
+        <div>
+          <div class="toggle-label">Auto-expire memories after</div>
+          <div class="toggle-desc">Rejected memories are always removed immediately</div>
+        </div>
+        <select id="retention">
+          <option value="30">30 days</option>
+          <option value="90" selected>90 days</option>
+          <option value="365">1 year</option>
+          <option value="0">Forever</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section danger-zone">
+      <div class="section-title">Danger Zone</div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Clear All Data</div>
+          <div class="toggle-desc">Permanently delete all memories, settings, and passport data</div>
+        </div>
+        <button class="btn-danger" id="clear-all">Clear Everything</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="save-toast" id="toast">Settings saved</div>
+
+  <script>
+    const SETTINGS_KEY = 'passport_settings';
+    const MEMORIES_KEY = 'passport_memories';
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    async function loadSettings() {
+      const result = await chrome.storage.local.get(SETTINGS_KEY);
+      const s = result[SETTINGS_KEY] || {};
+      document.getElementById('auto-capture').checked = s.autoCapture !== false;
+      document.getElementById('platform_chatgpt').checked = s.platform_chatgpt !== false;
+      document.getElementById('platform_claude').checked = s.platform_claude !== false;
+      document.getElementById('platform_perplexity').checked = s.platform_perplexity !== false;
+      document.getElementById('platform_gemini').checked = s.platform_gemini !== false;
+      document.getElementById('platform_copilot').checked = s.platform_copilot !== false;
+      document.getElementById('retention').value = String(s.retentionDays ?? 90);
+    }
+
+    async function saveSettings() {
+      const settings = {
+        autoCapture: document.getElementById('auto-capture').checked,
+        platform_chatgpt: document.getElementById('platform_chatgpt').checked,
+        platform_claude: document.getElementById('platform_claude').checked,
+        platform_perplexity: document.getElementById('platform_perplexity').checked,
+        platform_gemini: document.getElementById('platform_gemini').checked,
+        platform_copilot: document.getElementById('platform_copilot').checked,
+        retentionDays: parseInt(document.getElementById('retention').value, 10),
+      };
+      await chrome.storage.local.set({ [SETTINGS_KEY]: settings });
+      showToast('Settings saved');
+    }
+
+    // Auto-save on any change
+    document.querySelectorAll('input[type="checkbox"], select').forEach(el => {
+      el.addEventListener('change', saveSettings);
+    });
+
+    // Clear all data
+    document.getElementById('clear-all').addEventListener('click', async () => {
+      if (confirm('This will permanently delete ALL your Agent Passport data. Are you sure?')) {
+        await chrome.storage.local.remove([SETTINGS_KEY, MEMORIES_KEY]);
+        showToast('All data cleared');
+        loadSettings();
+      }
+    });
+
+    loadSettings();
+  </script>
+</body>
+</html>

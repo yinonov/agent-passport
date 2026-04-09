@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment variables
+.env
+.env.*
+*.local
+
+# macOS
+.DS_Store
+
+# TypeScript
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+
+# Vite
+.vite/
+
+# Chrome Extension build artifacts
+*.crx
+*.pem
+
+# Deploy platforms
+.netlify/
+.vercel/
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*

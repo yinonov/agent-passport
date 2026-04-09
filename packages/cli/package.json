@@ -1,0 +1,22 @@
+{
+  "name": "@agent-passport/cli",
+  "version": "0.1.0",
+  "description": "CLI for managing your Agent Passport",
+  "type": "module",
+  "bin": {
+    "passport": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test dist/__tests__/*.test.js"
+  },
+  "dependencies": {
+    "@agent-passport/schema": "workspace:*",
+    "@agent-passport/core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/node": "^20.14.0"
+  },
+  "license": "MIT"
+}

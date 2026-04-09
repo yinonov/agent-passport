@@ -1,0 +1,31 @@
+{
+  "name": "@agent-passport/core",
+  "version": "0.1.0",
+  "description": "Core memory store, passport generator, and memory extractor for Agent Passport",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test dist/__tests__/memory-store.test.js dist/__tests__/passport-generator.test.js dist/__tests__/memory-extractor.test.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@agent-passport/schema": "workspace:*",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/node": "^20.14.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@agent-passport/schema",
+  "version": "0.1.0",
+  "description": "Zod schemas and TypeScript types for Agent Passport",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test dist/__tests__/schemas.test.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/node": "^20.14.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "MIT"
+}

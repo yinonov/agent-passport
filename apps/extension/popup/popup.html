@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=380" />
+  <title>Agent Passport</title>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #1c2128;
+      --accent: #6C63FF;
+      --accent-hover: #7f78ff;
+      --accent-glow: rgba(108, 99, 255, 0.15);
+      --blue: #58a6ff;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-tertiary: #6e7681;
+      --border: #30363d;
+      --border-light: #3d444d;
+      --green: #3fb950;
+      --green-bg: rgba(63, 185, 80, 0.12);
+      --red: #f85149;
+      --red-bg: rgba(248, 81, 73, 0.12);
+      --yellow: #d29922;
+      --yellow-bg: rgba(210, 153, 34, 0.12);
+      --cyan: #39d353;
+      --orange: #f0883e;
+      --pink: #db61a2;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+      --radius: 8px;
+      --radius-sm: 6px;
+      --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      width: 380px;
+      min-height: 500px;
+      max-height: 580px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    body::-webkit-scrollbar {
+      width: 6px;
+    }
+    body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    body::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    /* ─── Header ─────────────────────────────────── */
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(108, 99, 255, 0.06) 0%, transparent 100%);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-icon {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .version-badge {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-glow);
+      border: 1px solid rgba(108, 99, 255, 0.25);
+      padding: 2px 7px;
+      border-radius: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── Tabs ────────────────────────────────────── */
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-secondary);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: color var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 15%;
+      width: 70%;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px 2px 0 0;
+    }
+
+    .tab-badge {
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9px;
+      padding: 0 5px;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .tab-badge:empty,
+    .tab-badge[data-count="0"] {
+      display: none;
+    }
+
+    /* ─── Tab Content ─────────────────────────────── */
+
+    .tab-content {
+      display: none;
+      padding: 12px 14px;
+      min-height: 380px;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+
+    .tab-content::-webkit-scrollbar {
+      width: 5px;
+    }
+    .tab-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .tab-content::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* ─── Memory Cards ────────────────────────────── */
+
+    .memory-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .memory-card:hover {
+      border-color: var(--border-light);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .category-badge {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .category-PROFILE {
+      background: rgba(88, 166, 255, 0.12);
+      color: #58a6ff;
+      border: 1px solid rgba(88, 166, 255, 0.2);
+    }
+    .category-PREFERENCE {
+      background: rgba(219, 97, 162, 0.12);
+      color: #db61a2;
+      border: 1px solid rgba(219, 97, 162, 0.2);
+    }
+    .category-PROJECT {
+      background: rgba(63, 185, 80, 0.12);
+      color: #3fb950;
+      border: 1px solid rgba(63, 185, 80, 0.2);
+    }
+    .category-DECISION {
+      background: rgba(210, 153, 34, 0.12);
+      color: #d29922;
+      border: 1px solid rgba(210, 153, 34, 0.2);
+    }
+    .category-GENERAL {
+      background: rgba(139, 148, 158, 0.12);
+      color: #8b949e;
+      border: 1px solid rgba(139, 148, 158, 0.2);
+    }
+
+    .platform-tag {
+      font-size: 10px;
+      color: var(--text-tertiary);
+    }
+
+    .card-content {
+      font-size: 13px;
+      color: var(--text-primary);
+      line-height: 1.55;
+      word-break: break-word;
+    }
+
+    .card-content-edit {
+      width: 100%;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      font-size: 13px;
+      font-family: inherit;
+      line-height: 1.5;
+      resize: vertical;
+      min-height: 50px;
+      outline: none;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 10px;
+    }
+
+    .card-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 14px;
+      transition: all var(--transition);
+    }
+
+    .card-btn:hover {
+      border-color: var(--border-light);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-btn.approve:hover {
+      background: var(--green-bg);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .card-btn.reject:hover {
+      background: var(--red-bg);
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .card-btn.edit:hover {
+      background: var(--yellow-bg);
+      border-color: var(--yellow);
+      color: var(--yellow);
+    }
+
+    .card-btn.save {
+      width: auto;
+      padding: 0 10px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .card-btn.save:hover {
+      background: var(--accent-hover);
+    }
+
+    .card-btn.cancel {
+      width: auto;
+      padding: 0 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .card-timestamp {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--text-tertiary);
+    }
+
+    /* ─── Empty State ─────────────────────────────── */
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .empty-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .empty-state h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .empty-state p {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* ─── Category Groups ─────────────────────────── */
+
+    .category-group {
+      margin-bottom: 14px;
+    }
+
+    .category-group-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .category-group-header h3 {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+    }
+
+    .category-group-count {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1px 7px;
+      border-radius: 10px;
+    }
+
+    /* ─── Action Bar ──────────────────────────────── */
+
+    .action-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .action-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .action-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .action-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ─── Inject Tab ──────────────────────────────── */
+
+    .inject-section {
+      margin-bottom: 16px;
+    }
+
+    .inject-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .inject-select {
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b949e' viewBox='0 0 16 16'%3E%3Cpath d='M4.427 7.427l3.396 3.396a.25.25 0 00.354 0l3.396-3.396A.25.25 0 0011.396 7H4.604a.25.25 0 00-.177.427z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      transition: border-color var(--transition);
+    }
+
+    .inject-select:hover,
+    .inject-select:focus {
+      border-color: var(--accent);
+    }
+
+    .inject-select option {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .checkbox-item:hover {
+      border-color: var(--border-light);
+      background: var(--bg-tertiary);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .checkbox-item label {
+      font-size: 12.5px;
+      color: var(--text-primary);
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .inject-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent) 0%, #5a52d5 100%);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all var(--transition);
+      box-shadow: 0 2px 8px rgba(108, 99, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .inject-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(108, 99, 255, 0.35);
+    }
+
+    .inject-btn:active {
+      transform: translateY(0);
+    }
+
+    .inject-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .inject-preview {
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      color: var(--text-secondary);
+      max-height: 120px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      line-height: 1.5;
+    }
+
+    .inject-status {
+      margin-top: 8px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 500;
+      display: none;
+    }
+
+    .inject-status.success {
+      display: block;
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid rgba(63, 185, 80, 0.2);
+    }
+
+    .inject-status.error {
+      display: block;
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid rgba(248, 81, 73, 0.2);
+    }
+
+    /* ─── Stats Bar ───────────────────────────────── */
+
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 18px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-secondary);
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+
+    .stats-left {
+      display: flex;
+      gap: 14px;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .stat-dot.green { background: var(--green); }
+    .stat-dot.yellow { background: var(--yellow); }
+    .stat-dot.blue { background: var(--blue); }
+
+    /* ─── Hidden file input ───────────────────────── */
+
+    #import-file-input {
+      display: none;
+    }
+
+    /* ─── Animations ──────────────────────────────── */
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .memory-card {
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <svg class="header-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="4" width="28" height="24" rx="4" fill="#161b22" stroke="#6C63FF" stroke-width="1.5"/>
+        <rect x="5" y="7" width="22" height="4" rx="1" fill="#6C63FF" opacity="0.8"/>
+        <circle cx="11" cy="17" r="3.5" fill="#161b22" stroke="#58a6ff" stroke-width="1.2"/>
+        <circle cx="11" cy="16.5" r="1.5" fill="#58a6ff"/>
+        <rect x="17" y="14" width="8" height="1.5" rx="0.75" fill="#30363d"/>
+        <rect x="17" y="17" width="6" height="1.5" rx="0.75" fill="#30363d"/>
+        <rect x="17" y="20" width="7" height="1.5" rx="0.75" fill="#30363d"/>
+        <rect x="5" y="24" width="22" height="1.5" rx="0.75" fill="#6C63FF" opacity="0.3"/>
+      </svg>
+      <h1>Agent Passport</h1>
+    </div>
+    <span class="version-badge">v0.1.0</span>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="inbox">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16A8 8 0 108 0a8 8 0 000 16zm.25-11.25v4.5a.75.75 0 01-1.5 0v-4.5a.75.75 0 011.5 0zM8 11a1 1 0 110 2 1 1 0 010-2z"/></svg>
+      Inbox
+      <span class="tab-badge" id="inbox-badge" data-count="0"></span>
+    </button>
+    <button class="tab-btn" data-tab="passport">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2.75C2 1.784 2.784 1 3.75 1h8.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25h-8.5zM5 6a1 1 0 112 0 1 1 0 01-2 0zm4.75-.75a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5h-1.5zM5 9a1 1 0 112 0 1 1 0 01-2 0zm4.75-.75a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5h-1.5z"/></svg>
+      Passport
+    </button>
+    <button class="tab-btn" data-tab="inject">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8.22 2.97a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06l2.97-2.97H3.75a.75.75 0 010-1.5h7.44L8.22 4.03a.75.75 0 010-1.06z"/></svg>
+      Inject
+    </button>
+  </div>
+
+  <!-- Inbox Tab -->
+  <div class="tab-content active" id="tab-inbox">
+    <div id="inbox-list"></div>
+  </div>
+
+  <!-- Passport Tab -->
+  <div class="tab-content" id="tab-passport">
+    <div class="action-bar">
+      <button class="action-btn" id="export-btn">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 12.5a.5.5 0 01-1 0V3.5A1.5 1.5 0 014 2h8a1.5 1.5 0 011.5 1.5v9a.5.5 0 01-1 0v-9a.5.5 0 00-.5-.5H4a.5.5 0 00-.5.5v9z"/><path d="M7.646 10.854a.5.5 0 00.708 0l2.5-2.5a.5.5 0 00-.708-.708L8.5 9.293V4.5a.5.5 0 00-1 0v4.793L5.854 7.646a.5.5 0 10-.708.708l2.5 2.5z"/></svg>
+        Export
+      </button>
+      <button class="action-btn" id="import-btn">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 12.5a.5.5 0 01-1 0V3.5A1.5 1.5 0 014 2h8a1.5 1.5 0 011.5 1.5v9a.5.5 0 01-1 0v-9a.5.5 0 00-.5-.5H4a.5.5 0 00-.5.5v9z"/><path d="M7.646 4.146a.5.5 0 01.708 0l2.5 2.5a.5.5 0 01-.708.708L8.5 5.707V10.5a.5.5 0 01-1 0V5.707L5.854 7.354a.5.5 0 11-.708-.708l2.5-2.5z"/></svg>
+        Import
+      </button>
+    </div>
+    <div id="passport-list"></div>
+    <input type="file" id="import-file-input" accept=".json" />
+  </div>
+
+  <!-- Inject Tab -->
+  <div class="tab-content" id="tab-inject">
+    <div class="inject-section">
+      <span class="inject-label">Target Platform</span>
+      <select class="inject-select" id="inject-platform">
+        <option value="chatgpt">ChatGPT</option>
+        <option value="claude">Claude</option>
+        <option value="perplexity">Perplexity</option>
+        <option value="gemini">Gemini</option>
+        <option value="copilot">GitHub Copilot</option>
+      </select>
+    </div>
+
+    <div class="inject-section">
+      <span class="inject-label">Categories to Include</span>
+      <div class="checkbox-group">
+        <div class="checkbox-item">
+          <input type="checkbox" id="cat-profile" value="PROFILE" checked />
+          <label for="cat-profile">About Me</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="cat-preference" value="PREFERENCE" checked />
+          <label for="cat-preference">Preferences</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="cat-project" value="PROJECT" checked />
+          <label for="cat-project">Projects &amp; Stack</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="cat-decision" value="DECISION" checked />
+          <label for="cat-decision">Decisions</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="cat-general" value="GENERAL" checked />
+          <label for="cat-general">General Notes</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="inject-preview" class="inject-preview" style="display:none;"></div>
+
+    <button class="inject-btn" id="inject-btn">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8.22 2.97a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06l2.97-2.97H3.75a.75.75 0 010-1.5h7.44L8.22 4.03a.75.75 0 010-1.06z"/></svg>
+      Inject Context
+    </button>
+
+    <div class="inject-status" id="inject-status"></div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stats-left">
+      <div class="stat-item">
+        <span class="stat-dot green"></span>
+        <span id="stat-approved">0</span> approved
+      </div>
+      <div class="stat-item">
+        <span class="stat-dot yellow"></span>
+        <span id="stat-pending">0</span> pending
+      </div>
+      <div class="stat-item">
+        <span class="stat-dot blue"></span>
+        <span id="stat-total">0</span> total
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>
